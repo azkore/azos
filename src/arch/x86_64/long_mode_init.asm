@@ -9,6 +9,9 @@ long_mode_start:
     mov rax, 0x0F20F200F200F20       ; Set the value to set the screen to: black background, white foreground, blank spaces.
     rep stosq                         ; Clear the entire screen. 
 
+    extern kmain
+    call kmain
+
 .os_returned:
     mov rax, 0x4f724f204f534f4f
     mov [0xb8000], rax
