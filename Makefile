@@ -8,7 +8,7 @@ assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
 	build/arch/$(arch)/%.o, $(assembly_source_files))
 #nim_source_files := $(wildcard src/*.nim)
 nim_source_files := src/kmain.nim src/ioutils.nim
-nim_object_files := $(patsubst src/%.nim, build/arch/$(arch)/nimcache/%.o, $(nim_source_files)) build/arch/$(arch)/nimcache/system.o build/arch/$(arch)/nimcache/unsigned.o
+nim_object_files := $(patsubst src/%.nim, build/arch/$(arch)/nimcache/%.o, $(nim_source_files)) build/arch/$(arch)/nimcache/stdlib_system.o build/arch/$(arch)/nimcache/stdlib_unsigned.o
 
 .PHONY: all clean run iso debug
 
@@ -43,4 +43,4 @@ build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
 	nasm -felf64 $< -o $@
 
 build/arch/$(arch)/nimcache/%o: src/kmain.nim
-	nim c -d:release --opt:size --nimcache:./build/arch/$(arch)/nimcache src/kmain.nim
+	nim c -d:release --passC:-fno-stack-protector --opt:size --nimcache:./build/arch/$(arch)/nimcache src/kmain.nim
