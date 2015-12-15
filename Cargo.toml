@@ -1,0 +1,10 @@
+[package]
+name = "azos"
+version = "0.0.1"
+authors = ["Eugene Korekin <azcore@gmail.com>", "Philipp Oppermann <dev@phil-opp.com>"]
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+rlibc = "0.1.4"
