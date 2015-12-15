@@ -43,4 +43,5 @@ build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
 	nasm -felf64 $< -o $@
 
 build/arch/$(arch)/nimcache/%o: src/kmain.nim
-	nim c -d:release --passC:-fno-stack-protector --opt:size --nimcache:./build/arch/$(arch)/nimcache src/kmain.nim
+	#nim c -d:release --passC:-fno-stack-protector --opt:size --nimcache:./build/arch/$(arch)/nimcache src/kmain.nim
+	/usr/local/bin/nim c --noLinking --gc:none --os:standalone --deadCodeElim:on --noMain  --parallelBuild:1 --gcc.exe:gcc  --passC:"-w" --passC:"-O2" --passC:"-Wall" --passC:"-Wextra" --passC:"-ffreestanding" --passC:"-D_POSIX_THREADS"  --passC:"-mcmodel=kernel"  --threads:on --nimcache:./build/arch/$(arch)/nimcache  src/kmain.nim
