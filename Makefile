@@ -6,7 +6,10 @@ grub_cfg := src/arch/$(arch)/grub.cfg
 assembly_source_files := $(wildcard src/arch/$(arch)/*.asm)
 assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
 	build/arch/$(arch)/%.o, $(assembly_source_files))
-#nim_source_files := $(wildcard src/*.nim)
+
+NIM=nim
+NIMARGS:=$(NIMARGS) --opt:size --noLinking --gc:none --os:standalone --deadCodeElim:on --noMain  --parallelBuild:1 --gcc.exe:gcc  --passC:"-w" --passC:"-O2" --passC:"-Wall" --passC:"-Wextra" --passC:"-ffreestanding" --passC:"-D_POSIX_THREADS"  --passC:"-mcmodel=kernel"  --threads:on --nimcache:./build/arch/$(arch)/nimcache
+
 nim_source_files := src/kmain.nim src/ioutils.nim
 nim_object_files := $(patsubst src/%.nim, build/arch/$(arch)/nimcache/%.o, $(nim_source_files)) build/arch/$(arch)/nimcache/stdlib_system.o build/arch/$(arch)/nimcache/stdlib_unsigned.o
 
@@ -42,6 +45,5 @@ build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
 	mkdir -p $(shell dirname $@)
 	nasm -felf64 $< -o $@
 
-build/arch/$(arch)/nimcache/%o: src/kmain.nim
-	#nim c -d:release --passC:-fno-stack-protector --opt:size --nimcache:./build/arch/$(arch)/nimcache src/kmain.nim
-	/usr/local/bin/nim c --noLinking --gc:none --os:standalone --deadCodeElim:on --noMain  --parallelBuild:1 --gcc.exe:gcc  --passC:"-w" --passC:"-O2" --passC:"-Wall" --passC:"-Wextra" --passC:"-ffreestanding" --passC:"-D_POSIX_THREADS"  --passC:"-mcmodel=kernel"  --threads:on --nimcache:./build/arch/$(arch)/nimcache  src/kmain.nim
+build/arch/$(arch)/nimcache/%o: $(nim_source_files)
+	$(NIM) c $(NIMARGS) $<
