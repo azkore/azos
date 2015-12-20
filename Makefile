@@ -29,7 +29,7 @@ debug: $(iso)
 iso: $(iso)
 
 $(iso): $(kernel) $(grub_cfg)
-	mkdir -p build/isofiles/boot/grub
+	[ ! -f build/isofiles/boot/grub ] && mkdir -p build/isofiles/boot/grub
 	cp $(kernel) build/isofiles/boot/kernel.bin
 	cp $(grub_cfg) build/isofiles/boot/grub
 	grub-mkrescue -o $(iso) build/isofiles 2> /dev/null
@@ -38,11 +38,9 @@ $(iso): $(kernel) $(grub_cfg)
 $(kernel): $(assembly_object_files) $(nim_object_files) $(linker_script)
 	ld -n --gc-sections -T $(linker_script) -o $(kernel) $(assembly_object_files) $(nim_object_files)
 	ls -l --color $(kernel)
-	strip $(kernel)
-	ls -l --color $(kernel)
 
 build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
-	mkdir -p $(shell dirname $@)
+	@[ ! -f $(shell dirname $@) ] && mkdir -p $(shell dirname $@)
 	nasm -felf64 $< -o $@
 
 build/arch/$(arch)/nimcache/%o: $(nim_source_files)
